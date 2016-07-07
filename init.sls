@@ -1,3 +1,23 @@
+{% set config_dir = salt['environ.get']('CONFIG_DIR', '/tmp') %}
+
+salt-master-state-tree:
+  module.run:
+    - name: file.copy
+    - src: {{ config_dir }}/salt
+    - dst: /srv/salt
+    - recurse: true
+    - unless:
+      - test -d /srv/salt && test -n "$(ls -A /srv/salt)"
+
+salt-master-pillar-tree:
+  module.run:
+    - name: file.copy
+    - src: {{ config_dir }}/pillar
+    - dst: /srv/pillar
+    - recurse: true
+    - unless:
+      - test -d /srv/pillar && test -n "$(ls -A /srv/pillar)"
+
 salt-minion:
   service.running:
     - name: salt-minion
