@@ -33,10 +33,8 @@ salt-minion-hostname:
       - service: salt-minion
 
 salt-master-accept-minion:
-  module.wait:
+  module.run:
     - name: saltutil.wheel
     - _fun: key.accept
     - args:
       - {{ grains['id'] }}
-    - watch:
-      - file: salt-minion-hostname
