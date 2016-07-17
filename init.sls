@@ -6,8 +6,9 @@ salt-master-state-tree:
     - src: {{ config_dir }}/salt
     - dst: /srv/salt
     - recurse: true
-    - unless:
-      - test -d /srv/salt && test -n "$(ls -A /srv/salt)"
+    - onlyif:
+      - test -d "{{ config_dir }}/salt"
+      - test ! -d /srv/salt || test -z "$(ls -A /srv/salt)"
 
 salt-master-pillar-tree:
   module.run:
@@ -15,8 +16,9 @@ salt-master-pillar-tree:
     - src: {{ config_dir }}/pillar
     - dst: /srv/pillar
     - recurse: true
-    - unless:
-      - test -d /srv/pillar && test -n "$(ls -A /srv/pillar)"
+    - onlyif:
+      - test -d "{{ config_dir }}/pillar"
+      - test ! -d /srv/pillar || test -z "$(ls -A /srv/pillar)"
 
 salt-minion:
   service.running:
