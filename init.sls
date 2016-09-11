@@ -37,6 +37,6 @@ salt-minion-hostname:
 salt-master-accept-minion:
   module.run:
     - name: saltutil.wheel
-    - _fun: key.accept
+    - m_name: key.accept
     - args:
       - {{ grains['id'] }}
