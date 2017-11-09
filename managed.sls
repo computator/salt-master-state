@@ -49,3 +49,11 @@ salt-state-tree:
       - file: salt-state-dir
       - pkg: mercurial
       - pip: mercurial-hggit-extension
+  file.append:
+    - name: /srv/salt/.hg/hgrc
+    - text: |
+        [hooks]
+        changegroup.update = $HG update
+    - unless: hg config -R /srv/salt hooks.changegroup.update
+    - require:
+      - hg: salt-state-tree
