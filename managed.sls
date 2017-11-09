@@ -2,6 +2,7 @@ include:
   - salt-master
   - mercurial
   - mercurial.hggit
+  - mercurial.rmap
 
 {% set salt_admins = salt['pillar.get']('salt_admins', []) %}
 
@@ -57,3 +58,13 @@ salt-state-tree:
     - unless: hg config -R /srv/salt hooks.changegroup.update
     - require:
       - hg: salt-state-tree
+
+salt-state-tree-subrepos:
+  cmd.run:
+    - name: rmap clone git://github.com/rlifshay/ --config extensions.hggit=
+    - onlyif: "rmap root 2>&1 | grep -q 'abort: repository .* not found!'"
+    - cwd: /srv/salt
+    - require:
+      - hg: salt-state-tree
+      - pkg: mercurial
+      - file: rmap
