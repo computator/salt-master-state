@@ -60,8 +60,8 @@ salt-state-tree:
 
 salt-state-tree-subrepos:
   cmd.run:
-    - name: rmap clone git://github.com/rlifshay/
-    - onlyif: "rmap root 2>&1 | grep -q 'abort: repository .* not found!'"
+    - name: 'find -type f -name repo.map -execdir rmap clone git://github.com/rlifshay/ \;'
+    - onlyif: 'find -type f -name repo.map -execdir rmap root \; 2>&1 | grep -q "abort: repository .* not found!"'
     - cwd: /srv/salt
     - require:
       - hg: salt-state-tree
