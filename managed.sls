@@ -45,7 +45,6 @@ salt-state-tree:
   hg.latest:
     - name: git://github.com/rlifshay/salt-master.git
     - target: /srv/salt
-    - opts: --config extensions.hggit=
     - require:
       - file: salt-state-dir
       - pkg: mercurial
@@ -61,10 +60,9 @@ salt-state-tree:
 
 salt-state-tree-subrepos:
   cmd.run:
-    - name: rmap clone git://github.com/rlifshay/ --config extensions.hggit=
+    - name: rmap clone git://github.com/rlifshay/
     - onlyif: "rmap root 2>&1 | grep -q 'abort: repository .* not found!'"
     - cwd: /srv/salt
     - require:
       - hg: salt-state-tree
-      - pkg: mercurial
       - file: rmap
