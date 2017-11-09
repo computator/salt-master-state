@@ -1,5 +1,7 @@
 include:
   - salt-master
+  - mercurial
+  - mercurial.hggit
 
 {% set salt_admins = salt['pillar.get']('salt_admins', []) %}
 
@@ -29,3 +31,21 @@ salt-pillar-dir:
     - mode: 2770
     - require:
       - group: salt-group
+
+salt-state-tree:
+  cmd.run:
+    - name: hg init /srv/salt
+    - creates: /srv/salt/.hg
+    - require:
+      - file: salt-state-dir
+      - pkg: mercurial
+    - require_in:
+      - hg: salt-state-tree
+  hg.latest:
+    - name: git://github.com/rlifshay/salt-master.git
+    - target: /srv/salt
+    - opts: --config extensions.hggit=
+    - require:
+      - file: salt-state-dir
+      - pkg: mercurial
+      - pip: mercurial-hggit-extension
