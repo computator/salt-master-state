@@ -66,3 +66,12 @@ salt-state-tree-subrepos:
     - require:
       - hg: salt-state-tree
       - file: rmap
+
+salt-state-tree-subrepos-hooks:
+  cmd.run:
+    - name: for repo in $(rmap -r1 config hooks.changegroup.update | grep -vF '$HG update' | tr -d :); do echo -e '[hooks]\nchangegroup.update = $HG update\n' >> $repo/.hg/hgrc; done
+    - onlyif: rmap -r1 config hooks.changegroup.update | grep -qvF '$HG update'
+    - cwd: /srv/salt
+    - require:
+      - cmd: salt-state-tree-subrepos
+      - file: rmap
