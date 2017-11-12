@@ -66,6 +66,10 @@ salt-state-tree-subrepos:
     - require:
       - hg: salt-state-tree
       - file: rmap
+  salt.runner:
+    - name: saltutil.sync_all
+    - onchanges:
+      - cmd: salt-state-tree-subrepos
 
 salt-state-tree-subrepos-hooks:
   cmd.run:
@@ -75,3 +79,38 @@ salt-state-tree-subrepos-hooks:
     - require:
       - cmd: salt-state-tree-subrepos
       - file: rmap
+
+salt-master-sshpki-module:
+  pkg.installed:
+    - name: python-pip
+    - unless: which pip
+  pip.installed:
+    - editable: /srv/salt/lib/sshpki_pillar/lib/sshpki
+    - unless: pip list | grep -q sshpki
+    - require:
+      - pkg: python-pip
+      - cmd: salt-state-tree-subrepos
+
+salt-master-sshpki-config:
+  file.managed:
+    - name: /etc/salt/master.d/50-sshpki-ext-pillar.conf
+    - contents: |
+        ext_pillar:
+          - sshpki_pillar:
+              pki_root: /srv/sshpki
+              ca_privkey: /srv/sshpki/ca_key
+    - watch_in:
+      - service: salt-master
+
+salt-sshpki:
+  file.directory:
+    - name: /srv/sshpki
+    - group: salt
+    - mode: 2770
+    - require:
+      - group: salt-group
+  cmd.run:
+    - name: ssh-keygen -q -N '' -C "Salt SSHPKI CA Key" -f /srv/sshpki/ca_key
+    - creates: /srv/sshpki/ca_key
+    - require:
+      - file: salt-sshpki

@@ -1,3 +1,7 @@
+salt-master:
+  service.running:
+    - init_delay: 2
+
 salt-minion:
   file.managed:
     - name: /etc/salt/minion.d/99-master-address.conf
