@@ -68,6 +68,8 @@ salt-state-tree-subrepos:
       - file: rmap
   salt.runner:
     - name: saltutil.sync_all
+    - require:
+      - pip: salt-master-sshpki-module
     - onchanges:
       - cmd: salt-state-tree-subrepos
 
@@ -90,6 +92,8 @@ salt-master-sshpki-module:
     - require:
       - pkg: python-pip
       - cmd: salt-state-tree-subrepos
+    - watch_in:
+      - service: salt-master
 
 salt-master-sshpki-config:
   file.managed:
