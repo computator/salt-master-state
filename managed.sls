@@ -43,6 +43,14 @@ salt-state-tree:
       - pkg: mercurial
     - require_in:
       - hg: salt-state-tree
+  file.append:
+    - name: /srv/salt/.hg/hgrc
+    - text: |
+        [paths]
+        default = git://github.com/rlifshay/salt-master.git
+    - unless: hg config -R /srv/salt paths.default
+    - require:
+      - cmd: salt-state-tree
   hg.latest:
     - name: git://github.com/rlifshay/salt-master.git
     - target: /srv/salt
@@ -50,14 +58,6 @@ salt-state-tree:
       - file: salt-state-dir
       - pkg: mercurial
       - pip: mercurial-hggit-extension
-  file.append:
-    - name: /srv/salt/.hg/hgrc
-    - text: |
-        [hooks]
-        changegroup.update = $HG update
-    - unless: hg config -R /srv/salt hooks.changegroup.update
-    - require:
-      - hg: salt-state-tree
 
 salt-state-tree-subrepos:
   cmd.run:
@@ -70,7 +70,15 @@ salt-state-tree-subrepos:
     - onchanges_in:
       - salt: salt-master-sshpki-config
 
-salt-state-tree-subrepos-hooks:
+salt-state-tree-hooks:
+  file.append:
+    - name: /srv/salt/.hg/hgrc
+    - text: |
+        [hooks]
+        changegroup.update = $HG update
+    - unless: hg config -R /srv/salt hooks.changegroup.update
+    - require:
+      - hg: salt-state-tree
   cmd.run:
     - name: for repo in $(rmap -r1 config hooks.changegroup.update | grep -vF '$HG update' | tr -d :); do echo -e '[hooks]\nchangegroup.update = $HG update\n' >> $repo/.hg/hgrc; done
     - onlyif: rmap -r1 config hooks.changegroup.update | grep -qvF '$HG update'
