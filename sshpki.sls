@@ -20,6 +20,7 @@ salt-master-sshpki-config:
           - sshpki_pillar:
               pki_root: /srv/sshpki
               ca_privkey: /srv/sshpki/ca_key
+    - makedirs: true
     - require:
       - cmd: salt-sshpki
       - salt: salt-master-sshpki-config
