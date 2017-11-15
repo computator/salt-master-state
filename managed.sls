@@ -57,7 +57,7 @@ salt-state-tree:
     - require:
       - file: salt-state-dir
       - pkg: mercurial
-      - pip: mercurial-hggit-extension
+      - file: mercurial-hggit-extension
 
 salt-state-tree-subrepos:
   cmd.run:
