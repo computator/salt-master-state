@@ -25,6 +25,13 @@ salt-state-dir:
     - mode: 2775
     - require:
       - group: salt-group
+  acl.present:
+    - name: /srv/salt
+    - acl_type: default:mask
+    - perms: rwx
+    - recurse: true
+    - require:
+      - file: salt-state-dir
 
 salt-pillar-dir:
   file.directory:
@@ -33,13 +40,20 @@ salt-pillar-dir:
     - mode: 2770
     - require:
       - group: salt-group
+  acl.present:
+    - name: /srv/pillar
+    - acl_type: default:mask
+    - perms: rwx
+    - recurse: true
+    - require:
+      - file: salt-state-dir
 
 salt-state-tree:
   cmd.run:
     - name: hg init /srv/salt
     - creates: /srv/salt/.hg
     - require:
-      - file: salt-state-dir
+      - acl: salt-state-dir
       - pkg: mercurial
     - require_in:
       - hg: salt-state-tree
@@ -55,7 +69,7 @@ salt-state-tree:
     - name: git://github.com/rlifshay/salt-master.git
     - target: /srv/salt
     - require:
-      - file: salt-state-dir
+      - acl: salt-state-dir
       - pkg: mercurial
       - file: mercurial-hggit-extension
 
