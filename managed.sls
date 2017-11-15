@@ -18,6 +18,13 @@ salt-group:
       {% endfor %}
     {% endif %}
 
+acl-utils:
+  pkg.installed:
+    - name: acl
+    - require_in:
+      - acl: salt-state-dir
+      - acl: salt-pillar-dir
+
 salt-state-dir:
   file.directory:
     - name: /srv/salt
