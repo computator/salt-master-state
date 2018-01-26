@@ -97,12 +97,12 @@ salt-state-tree-hooks:
     - text: |
         [hooks]
         changegroup.update = $HG update
-    - unless: hg config -R /srv/salt hooks.changegroup.update
+    - unless: hg config --config trusted.groups=salt -R /srv/salt hooks.changegroup.update
     - require:
       - hg: salt-state-tree
   cmd.run:
-    - name: for repo in $(rmap -r1 config hooks.changegroup.update | grep -vF '$HG update' | tr -d :); do echo -e '[hooks]\nchangegroup.update = $HG update\n' >> $repo/.hg/hgrc; done
-    - onlyif: rmap -r1 config hooks.changegroup.update | grep -qvF '$HG update'
+    - name: for repo in $(rmap -r1 config --config trusted.groups=salt hooks.changegroup.update | grep -vF '$HG update' | tr -d :); do echo -e '[hooks]\nchangegroup.update = $HG update\n' >> $repo/.hg/hgrc; done
+    - onlyif: rmap -r1 config --config trusted.groups=salt hooks.changegroup.update | grep -qvF '$HG update'
     - cwd: /srv/salt
     - require:
       - cmd: salt-state-tree-subrepos
