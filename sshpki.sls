@@ -20,6 +20,17 @@ salt-master-sshpki-config:
           - sshpki_pillar:
               pki_root: /srv/sshpki
               ca_privkey: /srv/sshpki/ca_key
+
+        reactor:
+          - 'salt/minion/*/start':
+            - salt://_reactors/sshpki-pull-keys.sls
+
+        schedule:
+          sshpki-pull-keys:
+            function: sshpki.pull_pubkeys
+            days: 1
+            args:
+              - '*'
     - makedirs: true
     - require:
       - cmd: salt-sshpki
