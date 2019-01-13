@@ -61,7 +61,7 @@ salt-state-tree:
     - creates: /srv/salt/.hg
     - require:
       - acl: salt-state-dir
-      - pkg: mercurial
+      - sls: mercurial
     - require_in:
       - hg: salt-state-tree
   file.append:
@@ -77,8 +77,8 @@ salt-state-tree:
     - target: /srv/salt
     - require:
       - acl: salt-state-dir
-      - pkg: mercurial
-      - file: mercurial-hggit-extension
+      - sls: mercurial
+      - sls: mercurial-hggit-extension
 
 salt-state-tree-subrepos:
   cmd.run:
@@ -87,7 +87,7 @@ salt-state-tree-subrepos:
     - cwd: /srv/salt
     - require:
       - hg: salt-state-tree
-      - file: rmap
+      - sls: rmap
     - onchanges_in:
       - salt: salt-master-sshpki-config
 
@@ -106,7 +106,7 @@ salt-state-tree-hooks:
     - cwd: /srv/salt
     - require:
       - cmd: salt-state-tree-subrepos
-      - file: rmap
+      - sls: rmap
 
 extend:
   salt-sshpki:
